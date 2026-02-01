@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Declaración de Amor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        body {
+            background: linear-gradient(120deg, #ffe6f2, #ffc2d1, #e6f2ff);
+            background-size: 400% 400%;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            animation: fondoSuave 20s ease infinite alternate;
+            overflow: hidden;
+            position: relative;
+        }
+        @keyframes fondoSuave {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ANIMACIÓN PRINCIPAL DEL CORAZÓN GRANDE */
+        .corazon-principal-contenedor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: desaparecerCorazon 8s ease forwards;
+        }
+        .corazon-grande {
+            font-size: 120px;
+            color: #ff4d94;
+            position: relative;
+            animation: latirCorazonGrande 2s ease infinite alternate, aparecerCorazon 1.5s ease forwards;
+            opacity: 0;
+            transform: scale(0.5);
+        }
+        .texto-corazon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+            padding: 0 20px;
+            animation: aparecerTextoCorazon 2s ease forwards 1s;
+            opacity: 0;
+        }
+        @keyframes aparecerCorazon {
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes latirCorazonGrande {
+            0% { transform: scale(1); text-shadow: 0 0 20px rgba(255, 77, 148, 0.5); }
+            100% { transform: scale(1.3); text-shadow: 0 0 50px rgba(255, 77, 148, 0.9); }
+        }
+        @keyframes aparecerTextoCorazon {
+            to { opacity: 1; }
+        }
+        @keyframes desaparecerCorazon {
+            0% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        /* Corazones flotantes y de fondo */
+        .corazon-flotante {
+            position: absolute;
+            color: #ff4d94;
+            font-size: 20px;
+            opacity: 0;
+            animation: flotarCorazon 6s ease-in-out infinite;
+            z-index: 1;
+        }
+        @keyframes flotarCorazon {
+            0% { 
+                transform: translateY(100vh) rotate(0deg) scale(0.5); 
+                opacity: 0; 
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { 
+                transform: translateY(-20px) rotate(720deg) scale(1.2); 
+                opacity: 0; 
+            }
+        }
+
+        .corazon-fondo {
+            position: absolute;
+            color: rgba(255, 77, 148, 0.2);
+            font-size: 50px;
+            animation: parpadearCorazon 4s ease infinite alternate;
+            z-index: 1;
+        }
+        @keyframes parpadearCorazon {
+            0% { opacity: 0.1; transform: scale(1); }
+            100% { opacity: 0.3; transform: scale(1.2); }
+        }
+
+        /* Contenedor principal */
+        .contenedor-declaracion {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            padding: 40px 30px;
+            border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(255, 77, 148, 0.3);
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            animation: aparecerContenedor 2s ease forwards 7s;
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+            z-index: 10;
+        }
+        @keyframes aparecerContenedor {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Decoraciones */
+        .decoracion-superior, .decoracion-inferior {
+            color: #ff4d94;
+            font-size: 40px;
+            margin: 20px 0;
+            animation: brillarYLatir 2.5s ease infinite alternate;
+            display: block;
+        }
+        @keyframes brillarYLatir {
+            0% { transform: scale(1); text-shadow: none; }
+            100% { transform: scale(1.3); text-shadow: 0 0 20px rgba(255, 77, 148, 0.7); }
+        }
+
+        /* Frase de declaración */
+        .frase-principal {
+            color: #d63384;
+            font-size: 24px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            padding: 0 15px;
+            animation: aparecerFrase 2.5s ease forwards 7.5s;
+            opacity: 0;
+            position: relative;
+        }
+        .frase-principal span {
+            color: #ff4d94;
+            font-weight: bold;
+            animation: latirCorazon 1.2s ease infinite alternate;
+            display: inline-block;
+        }
+        @keyframes aparecerFrase {
+            to { opacity: 1; }
+        }
+        @keyframes latirCorazon {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.3); }
+        }
+
+        /* Frase destacada */
+        .frase-destacada {
+            color: #d63384;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 25px 0;
+            padding: 15px;
+            border: 3px dashed #ff4d94;
+            border-radius: 25px;
+            animation: resaltarFrase 3s ease forwards 8s;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        @keyframes resaltarFrase {
+            to {
+                opacity: 1;
+                transform: scale(1);
+                text-shadow: 0 0 15px rgba(214, 51, 132, 0.4);
+            }
+        }
+
+        /* Contenedor de botones */
+        .contenedor-botones {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+            animation: aparecerBotones 2.5s ease forwards 8.5s;
+            opacity: 0;
+        }
+        @keyframes aparecerBotones {
+            to { opacity: 1; }
+        }
+
+        /* Botón Sí */
+        .boton-si {
+            padding: 15px 35px;
+            background-color: #ff4d94;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(255, 77, 148, 0.3);
+        }
+        .boton-si:hover {
+            background-color: #d63384;
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(255, 77, 148, 0.5);
+        }
+
+        /* Botón No */
+        .boton-no {
+            padding: 15px 35px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.3);
+            position: relative;
+        }
+
+        /* Reproductor de música */
+        .reproductor-musica {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(255, 77, 148, 0.3);
+            margin: 25px 0;
+            animation: aparecerReproductor 3s ease forwards 9s;
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        @keyframes aparecerReproductor {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- CORAZÓN GRANDE CON ANIMACIÓN PRINCIPAL -->
+    <div class="corazon-principal-contenedor">
+        <div class="corazon-grande">❤️</div>
+        <div class="texto-corazon">con todo mi corazón para Denisse</div>
+    </div>
+
+    <!-- Script para crear corazones -->
+    <script>
+        // Corazones flotantes
+        for (let i = 0; i < 25; i++) {
+            const corazon = document.createElement('div');
+            corazon.classList.add('corazon-flotante');
+            corazon.textContent = '❤️';
+            corazon.style.left = `${Math.random() * 100}vw`;
+            corazon.style.animationDelay = `${Math.random() * 8}s`;
+            corazon.style.fontSize = `${Math.random() * 20 + 10}px`;
+            document.body.appendChild(corazon);
+        }
+
+        // Corazones de fondo
+        for (let i = 0; i < 12; i++) {
+            const corazonFondo = document.createElement('div');
+            corazonFondo.classList.add('corazon-fondo');
+            corazonFondo.textContent = '❤️';
+            corazonFondo.style.left = `${Math.random() * 100}vw`;
+            corazonFondo.style.top = `${Math.random() * 100}vh`;
+            corazonFondo.style.animationDelay = `${Math.random() * 5}s`;
+            document.body.appendChild(corazonFondo);
+        }
+
+        // Función para mover el botón No y mostrar mensaje
+        document.addEventListener('DOMContentLoaded', () => {
+            const botonNo = document.getElementById('boton-no');
+            const contenedor = document.querySelector('.contenedor-declaracion');
+            let botonClickeado = false;
+
+            // Mover botón hasta que se haga clic
+            botonNo.addEventListener('mouseover', () => {
+                if(!botonClickeado) {
+                    const contenedorRect = contenedor.getBoundingClientRect();
+                    const botonAncho = botonNo.offsetWidth;
+                    const botonAlto = botonNo.offsetHeight;
+
+                    const maxX = contenedorRect.width - botonAncho - 20;
+                    const maxY = contenedorRect.height - botonAlto - 20;
+
+                    const nuevaX = Math.floor(Math.random() * maxX);
+                    const nuevaY = Math.floor(Math.random() * maxY);
+
+                    botonNo.style.position = 'absolute';
+                    botonNo.style.left = `${nuevaX}px`;
+                    botonNo.style.top = `${nuevaY + contenedorRect.top}px`;
+                    botonNo.style.transform = `scale(${1 + Math.random() * 0.2}) rotate(${Math.random() * 10 - 5}deg)`;
+                }
+            });
+
+            // Mostrar mensaje al hacer clic en No y cambiar texto del botón
+            botonNo.addEventListener('click', () => {
+                botonClickeado = true;
+                botonNo.textContent = 'si que si 🥺';
+                botonNo.style.background = '#ff4d94';
+                botonNo.style.transform = 'scale(1) rotate(0deg)';
+                botonNo.style.position = 'static';
+
+                // Redirigir también a WhatsApp como si fuera Sí
+                const numeroWhatsApp = '51999888777    ';
+                const mensajeWhatsApp = '¡Sí quiero que seas mi enamorado! 🥰';
+                const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensajeWhatsApp)}`;
+                window.open(urlWhatsApp, '_blank');
+            });
+
+            // Redirigir a WhatsApp cuando se presiona Sí
+            const botonSi = document.getElementById('boton-si');
+            const numeroWhatsApp = '51919041980'; // Reemplaza por tu número
+            const mensajeWhatsApp = '¡Sí quiero ser tu 14 de febrero! ❤️';
+            const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensajeWhatsApp)}`;
+
+            botonSi.addEventListener('click', () => {
+                window.open(urlWhatsApp, '_blank');
+            });
+        });
+    </script>
+
+    <div class="contenedor-declaracion">
+        <div class="decoracion-superior">❤️✨❤️✨❤️✨❤️</div>
+        
+        <p class="frase-principal">
+            Tantas cosas lindas que hay en el universo y ninguna se compara a ti <span>🙈💗</span> me gustas mucho 
+        </p>
+        
+        <div class="frase-destacada">
+            Te quiero mucho... ¿Puedo ser tu 14 de febrero 🥺?
+        </div>
+        
+        <!-- Reproductor con la música solicitada -->
+        <div class="reproductor-musica">
+            <iframe width="100%" height="120" src="https://www.youtube.com/embed/4DO8GsIYfhQ" title="Enrique Iglesias, Juan Luis Guerra - Cuando Me Enamoro" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+        
+        <div class="contenedor-botones">
+            <button class="boton-si" id="boton-si">SÍ 💖</button>
+            <button class="boton-no" id="boton-no">NO 🚫</button>
+        </div>
+        
+        <div class="decoracion-inferior">❤️✨❤️✨❤️✨❤️</div>
+    </div>
+</body>
+</html>
