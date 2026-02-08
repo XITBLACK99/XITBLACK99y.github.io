@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saturno - Mi Universo</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: #020205 url('https://w.wallhaven.cc/full/8o/wallhaven-8o9m8y.jpg') no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Arial', sans-serif;
+        }
+
+        #play-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999; color: white; cursor: pointer;
+        }
+
+        .btn-play {
+            padding: 20px 60px; font-size: 26px; background: #ff007f;
+            border: none; border-radius: 50px; color: white;
+            box-shadow: 0 0 50px #ff007f; cursor: pointer;
+            font-weight: bold; animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .universe-3d {
+            position: relative; width: 1000px; height: 1000px;
+            transform: rotateX(75deg); transform-style: preserve-3d;
+            display: none;
+        }
+
+        .sun {
+            position: absolute; top: 50%; left: 50%; width: 70px; height: 70px;
+            background: #fff; border-radius: 50%;
+            transform: translate(-50%, -50%) rotateX(-75deg);
+            box-shadow: 0 0 60px #fff, 0 0 120px #ff007f;
+        }
+
+        .orbit {
+            position: absolute; top: 50%; left: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 50%;
+            transform: translate(-50%, -50%); transform-style: preserve-3d;
+            animation: spin linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .word {
+            position: absolute; color: white; font-weight: bold; font-size: 16px;
+            text-shadow: 0 0 15px #ff007f; white-space: nowrap;
+            transform: rotateX(-90deg) translateY(-50%);
+            left: 100%; top: 50%;
+        }
+
+        .shooting-star {
+            position: absolute; height: 2px;
+            background: linear-gradient(90deg, #fff, transparent);
+            animation: shoot 2s linear infinite; opacity: 0;
+        }
+
+        @keyframes shoot {
+            0% { transform: translate(100vw, -10vh) rotate(-30deg); opacity: 0; }
+            10% { opacity: 1; }
+            40% { transform: translate(-50vw, 90vh) rotate(-30deg); opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        .lyrics {
+            position: fixed; bottom: 60px; color: white; font-size: 1.4rem;
+            text-align: center; width: 100%; text-shadow: 0 0 25px #ff007f;
+            font-style: italic; display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="play-overlay" onclick="startExperience()">
+        <button class="btn-play">💖 VER MI UNIVERSO 💖</button>
+    </div>
+
+    <div class="universe-3d" id="universe">
+        <div class="sun"></div>
+    </div>
+    
+    <div class="lyrics" id="lyrics-text">"En Saturno viven los hijos que nunca tuvimos..."</div>
+
+    <audio id="bg-audio" loop>
+        <source src="https://files.catbox.moe/k37h9s.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const universe = document.getElementById('universe');
+        const audio = document.getElementById('bg-audio');
+        const overlay = document.getElementById('play-overlay');
+        const lyrics = document.getElementById('lyrics-text');
+
+        function startExperience() {
+            audio.play();
+            overlay.style.display = 'none';
+            universe.style.display = 'block';
+            lyrics.style.display = 'block';
+            
+            const frases = ["MI REYNA", "BONITA", "BELLA", "PRINCESA", "MI PLANETA", "HERMOSA", "MI TODO", "DULZURA", "MI VIDA", "TESORO", "MI CIELO", "ENCANTO"];
+            
+            frases.forEach((texto, i) => {
+                const orbit = document.createElement('div');
+                orbit.className = 'orbit';
+                const radio = 230 + (i * 70);
+                orbit.style.width = radio + 'px';
+                orbit.style.height = radio + 'px';
+                orbit.style.animationDuration = (14 + i * 2) + 's';
+                orbit.style.animationDelay = `-${Math.random() * 40}s`;
+
+                const word = document.createElement('div');
+                word.className = 'word';
+                word.innerText = texto;
+                if(i % 2 === 0) word.style.color = "#ffb6c1";
+                orbit.appendChild(word);
+                universe.appendChild(orbit);
+            });
+
+            setInterval(() => {
+                const star = document.createElement('div');
+                star.className = 'shooting-star';
+                star.style.width = (Math.random() * 200 + 150) + 'px';
+                star.style.top = Math.random() * 50 + '%';
+                star.style.left = Math.random() * 100 + '%';
+                document.body.appendChild(star);
+                setTimeout(() => star.remove(), 2000);
+            }, 500);
+        }
+    </script>
+</body>
+</html>
