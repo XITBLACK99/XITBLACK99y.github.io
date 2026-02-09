@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta Nítida</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; font-family: 'Arial Black', sans-serif; touch-action: none; }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        
+        #overlay-inicio {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 100; display: flex; justify-content: center; align-items: center;
+        }
+
+        #btn-comenzar {
+            padding: 20px 40px; font-size: 1.5rem; background: #ff4d6d; color: white;
+            border: none; border-radius: 50px; cursor: pointer; font-weight: bold;
+            box-shadow: 0 0 30px #ff4d6d; animation: pulse 2s infinite;
+        }
+
+        #ui-layer { 
+            position: absolute; bottom: 10%; z-index: 10; text-align: center; 
+            display: none; opacity: 0; transition: opacity 0.8s; width: 100%;
+        }
+
+        .buttons { display: flex; gap: 20px; justify-content: center; }
+        button { padding: 15px 35px; font-size: 1.2rem; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; }
+        #btn-si { background: #ff4d6d; color: white; box-shadow: 0 0 20px #ff4d6d; }
+        #btn-no { background: #333; color: #fff; position: relative; }
+        
+        #msg-guia { position: absolute; top: 12%; color: #ffb7c5; z-index: 5; text-align: center; width: 100%; font-size: 1.1rem; display: none; }
+        
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    </style>
+</head>
+<body>
+
+    <div id="overlay-inicio">
+        <button id="btn-comenzar" onclick="iniciarTodo()">Abrir Regalo 🎁</button>
+    </div>
+
+    <audio id="musica" loop preload="auto">
+        <source src="musica.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="msg-guia">Toca la flor 🌸</div>
+
+    <div id="ui-layer">
+        <div class="buttons">
+            <button id="btn-si" onclick="celebrar()">¡SÍ!</button>
+            <button id="btn-no" onmouseover="huir(this)" onclick="huir(this)">No</button>
+        </div>
+    </div>
+
+    <canvas id="canvas1"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas1');
+        const ctx = canvas.getContext('2d');
+        const audio = document.getElementById('musica');
+        let particles = [];
+        let stage = -1; 
+        const dpr = window.devicePixelRatio || 1;
+
+        function iniciarTodo() {
+            document.getElementById('overlay-inicio').style.display = 'none';
+            document.getElementById('msg-guia').style.display = 'block';
+            audio.play().catch(() => {});
+            stage = 0;
+            setSize();
+        }
+
+        function setSize() {
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            ctx.scale(dpr, dpr);
+            canvas.style.width = window.innerWidth + 'px';
+            canvas.style.height = window.innerHeight + 'px';
+            if(stage >= 0) init();
+        }
+
+        class Particula {
+            constructor(fx, fy, tx, ty, cx, cy) {
+                this.x = Math.random() * window.innerWidth;
+                this.y = Math.random() * window.innerHeight;
+                this.fx = fx; this.fy = fy;
+                this.tx = tx; this.ty = ty;
+                this.cx = cx; this.cy = cy;
+                this.vx = (Math.random() - 0.5) * 40;
+                this.vy = (Math.random() - 0.5) * 40;
+                this.color = '#ffb7c5';
+                this.size = Math.random() * 1.5 + 1;
+            }
+            actualizar() {
+                let ease = 0.12;
+                if (stage === 0) {
+                    this.x += (this.fx - this.x) * 0.08;
+                    this.y += (this.fy - this.y) * 0.08;
+                } else if (stage === 1) {
+                    this.x += (this.tx - this.x) * ease;
+                    this.y += (this.ty - this.y) * ease;
+                    this.color = '#ff69b4';
+                } else if (stage === 2) {
+                    this.x += this.vx; this.y += this.vy;
+                    this.vx *= 0.96; this.vy *= 0.96;
+                    this.vy += 0.15; 
+                } else if (stage === 3) {
+                    this.x += (this.cx - this.x) * 0.1;
+                    this.y += (this.cy - this.y) * 0.1;
+                    this.color = '#ffffff';
+                }
+            }
+            dibujar() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function obtenerPuntos(textos, fontSize, yOffset) {
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = window.innerWidth;
+            tempCanvas.height = window.innerHeight;
+            
+            tempCtx.fillStyle = "white";
+            tempCtx.font = `900 ${fontSize}px sans-serif`;
+            tempCtx.textAlign = 'center';
+            tempCtx.textBaseline = 'middle';
+            
+            const spacing = fontSize * 1.2;
+            const startY = (tempCanvas.height / 2) + yOffset;
+            
+            textos.forEach((t, i) => {
+                tempCtx.fillText(t, tempCanvas.width / 2, startY + (i * spacing) - ((textos.length-1)*spacing/2));
+            });
+            
+            const data = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height).data;
+            let puntos = [];
+            // Escaneo de alta densidad (cada 3 píxeles)
+            for (let y = 0; y < tempCanvas.height; y += 3) {
+                for (let x = 0; x < tempCanvas.width; x += 3) {
+                    if (data[(y * tempCanvas.width + x) * 4 + 3] > 150) puntos.push({x, y});
+                }
+            }
+            return puntos;
+        }
+
+        function init() {
+            particles = [];
+            const isMob = window.innerWidth < 600;
+            const fontSize = isMob ? 38 : 65;
+            
+            const p1 = obtenerPuntos(isMob ? ["¿QUIERES", "SER MI", "MEJOR", "AMIGA?"] : ["¿QUIERES SER MI MEJOR AMIGA?"], fontSize, -80);
+            const p2 = obtenerPuntos(isMob ? ["SABÍA QUE", "DIRÍAS", "QUE SÍII"] : ["SABÍA QUE DIRÍAS QUE SÍII"], fontSize, -60);
+            
+            p1.forEach((pt, i) => {
+                let t = i * 0.15;
+                let r = (isMob ? 120 : 220) * Math.sin(5 * t);
+                let fx = window.innerWidth/2 + r * Math.cos(t);
+                let fy = (window.innerHeight/2 - 60) + r * Math.sin(t);
+                let c = p2[i % p2.length];
+                particles.push(new Particula(fx, fy, pt.x, pt.y, c.x, c.y));
+            });
+        }
+
+        function animar() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+            ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+            if (stage >= 0) {
+                particles.forEach(p => { p.actualizar(); p.dibujar(); });
+            }
+            requestAnimationFrame(animar);
+        }
+
+        const handleInteraction = (e) => {
+            if(stage === 0 && e.target.id !== 'btn-comenzar') {
+                stage = 1;
+                document.getElementById('ui-layer').style.display = 'block';
+                setTimeout(() => document.getElementById('ui-layer').style.opacity = '1', 50);
+                document.getElementById('msg-guia').style.display = 'none';
+            }
+        };
+
+        window.addEventListener('touchstart', handleInteraction);
+        window.addEventListener('mousedown', handleInteraction);
+
+        function celebrar() {
+            stage = 2;
+            document.getElementById('ui-layer').style.display = 'none';
+            particles.forEach(p => {
+                p.color = `hsl(${Math.random()*360}, 100%, 70%)`;
+                p.vx = (Math.random()-0.5)*50; p.vy = (Math.random()-0.5)*50;
+            });
+            setTimeout(() => { stage = 3; }, 3000);
+        }
+
+        function huir(btn) {
+            btn.style.position = 'absolute';
+            btn.style.top = Math.random()*70+15+'%'; btn.style.left = Math.random()*70+15+'%';
+        }
+
+        window.addEventListener('resize', setSize);
+        animar();
+    </script>
+</body>
+</html>
